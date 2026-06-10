@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Truyện Audio</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#000;--sur:#121212;--sur2:#181818;--sur3:#242424;--sur4:#2a2a2a;--g:#1db954;--gh:#1ed760;--t1:#fff;--t2:#b3b3b3;--t3:#535353;--sw:220px;--ph:72px}
+body{background:var(--bg);color:var(--t1);font-family:'Helvetica Neue',Arial,sans-serif;overflow:hidden;font-size:14px}
+.app{display:grid;grid-template-columns:var(--sw) 1fr;grid-template-rows:1fr var(--ph);height:100vh;gap:8px;padding:8px 8px 0}
+.sidebar{background:var(--bg);border-radius:8px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.sb-top{background:var(--sur2);border-radius:8px;padding:12px 8px}
+.sb-lib{background:var(--sur2);border-radius:8px;flex:1;overflow:hidden;display:flex;flex-direction:column;padding:12px 8px}
+.ni{display:flex;align-items:center;gap:14px;padding:8px 10px;border-radius:6px;cursor:pointer;color:var(--t2);font-size:13px;font-weight:600;transition:color .1s}
+.ni:hover,.ni.on{color:var(--t1)}
+.ni.on{background:var(--sur3)}
+.ni i{font-size:20px;flex-shrink:0}
+.lib-hd{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 10px}
+.lib-hd span{font-size:13px;font-weight:700;color:var(--t2);display:flex;align-items:center;gap:8px}
+.lib-hd span i{font-size:18px}
+.lib-hd button{background:none;border:none;color:var(--t2);cursor:pointer;font-size:20px;padding:0}
+.lib-hd button:hover{color:var(--t1)}
+.lib-list{overflow-y:auto;flex:1;scrollbar-width:none}
+.lib-list::-webkit-scrollbar{display:none}
+.li{display:flex;align-items:center;gap:10px;padding:6px 4px;border-radius:4px;cursor:pointer}
+.li:hover{background:var(--sur3)}
+.li-cov{width:42px;height:42px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+.li-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1)}
+.li-sub{font-size:11px;color:var(--t2);margin-top:1px}
+.main{background:var(--sur);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 0;flex-shrink:0}
+.tb-nav{display:flex;gap:4px}
+.tnav{width:30px;height:30px;background:rgba(0,0,0,.6);border-radius:50%;border:none;color:var(--t1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px}
+.tnav:hover{background:rgba(0,0,0,.9)}
+.tb-r{display:flex;align-items:center;gap:10px}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--sur4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;cursor:pointer}
+.avatar:hover{background:#3a3a3a}
+.content{flex:1;overflow-y:auto;padding:16px 20px 20px;scrollbar-width:thin;scrollbar-color:var(--sur4) transparent}
+.content::-webkit-scrollbar{width:5px}
+.content::-webkit-scrollbar-thumb{background:var(--sur4);border-radius:3px}
+.page{display:none}
+.page.on{display:block}
+.greeting{font-size:22px;font-weight:900;margin-bottom:18px}
+.shelf{margin-bottom:26px}
+.sh-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sh-title{font-size:18px;font-weight:900}
+.sh-more{font-size:13px;font-weight:700;color:var(--t2);cursor:pointer;letter-spacing:.05em}
+.sh-more:hover{color:var(--t1);text-decoration:underline}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+.sc{background:var(--sur2);border-radius:6px;padding:14px;cursor:pointer;transition:background .15s;position:relative}
+.sc:hover{background:var(--sur3)}
+.sc-img{width:100%;aspect-ratio:1;border-radius:4px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:38px;position:relative;overflow:hidden}
+.sc-play{position:absolute;bottom:6px;right:6px;width:38px;height:38px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(6px);transition:all .2s;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.sc:hover .sc-play{opacity:1;transform:translateY(0)}
+.sc-play i{font-size:16px;color:#000;margin-left:2px}
+.sc-title{font-size:13px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-sub{font-size:12px;color:var(--t2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:22px}
+.qi{background:var(--sur3);border-radius:4px;display:flex;align-items:center;overflow:hidden;cursor:pointer;height:50px;transition:background .15s}
+.qi:hover{background:var(--sur4)}
+.qi-img{width:50px;height:50px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px}
+.qi-name{font-size:13px;font-weight:700;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+.gc{border-radius:6px;padding:14px 14px 30px;cursor:pointer;position:relative;overflow:hidden;min-height:90px}
+.gc:hover{filter:brightness(1.12)}
+.gc-name{font-size:15px;font-weight:900;color:#fff;position:relative;z-index:1}
+.gc-icon{position:absolute;right:-4px;bottom:-10px;font-size:52px;transform:rotate(18deg);z-index:0}
+.search-box{position:relative;margin-bottom:18px}
+.search-box i{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--t3)}
+.search-box input{width:100%;background:var(--sur3);border:none;border-radius:500px;padding:11px 16px 11px 44px;font-size:15px;color:var(--t1);outline:none}
+.search-box input:focus{background:var(--sur4);outline:2px solid var(--t1)}
+.search-box input::placeholder{color:var(--t3)}
+.rk-item{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:12px;padding:8px 4px;border-radius:6px;cursor:pointer}
+.rk-item:hover{background:var(--sur3)}
+.rk-num{font-size:18px;font-weight:900;color:var(--t3);text-align:center}
+.rk-item:nth-child(1) .rk-num{color:#ffd700}
+.rk-item:nth-child(2) .rk-num{color:#c0c0c0}
+.rk-item:nth-child(3) .rk-num{color:#cd7f32}
+.rk-cov{width:50px;height:50px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.rk-info{min-width:0}
+.rk-title{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk-sub{font-size:12px;color:var(--t2);margin-top:2px}
+.rk-views{font-size:12px;color:var(--t2)}
+.rk-divider{border:none;border-top:.5px solid #282828;margin:2px 0}
+.tab-row{display:flex;gap:8px;margin-bottom:18px}
+.tab{background:var(--sur3);border-radius:500px;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;color:var(--t2);border:none}
+.tab:hover{color:var(--t1)}
+.tab.on{background:var(--t1);color:#000}
+.det-hero{display:flex;gap:22px;align-items:flex-end;padding:28px 0 16px}
+.det-cov{width:156px;height:156px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:60px;box-shadow:0 4px 50px rgba(0,0,0,.5)}
+.det-type{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;color:var(--t2)}
+.det-title{font-size:26px;font-weight:900;line-height:1.1;margin-bottom:8px}
+.det-meta{font-size:13px;color:var(--t2);line-height:1.8}
+.det-meta b{color:var(--t1)}
+.det-acts{display:flex;align-items:center;gap:16px;padding:16px 0 8px}
+.btn-g{background:var(--g);color:#000;border:none;border-radius:500px;padding:13px 30px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-g:hover{background:var(--gh)}
+.btn-o{background:none;color:var(--t2);border:1px solid var(--t3);border-radius:500px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-o:hover{color:var(--t1);border-color:var(--t1)}
+.btn-ic{background:none;border:none;color:var(--t2);cursor:pointer;font-size:22px}
+.btn-ic:hover{color:var(--t1)}
+.ep-hd{display:grid;grid-template-columns:36px 1fr 70px;padding:4px 12px 10px 4px;font-size:12px;color:var(--t3);border-bottom:.5px solid #282828;margin-bottom:2px}
+.ep-hd span:last-child{text-align:right}
+.ep-row{display:grid;grid-template-columns:36px 1fr 70px;align-items:center;padding:8px 12px 8px 4px;border-radius:4px;cursor:pointer}
+.ep-row:hover{background:var(--sur3)}
+.ep-row.now .ep-name{color:var(--g)}
+.ep-row.now .ep-n{color:var(--g)}
+.ep-n{font-size:14px;color:var(--t2);text-align:center}
+.ep-meta{min-width:0}
+.ep-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ep-date{font-size:12px;color:var(--t2);margin-top:1px}
+.ep-dur{font-size:12px;color:var(--t2);text-align:right}
+.desc-box{font-size:13px;color:var(--t2);line-height:1.7;max-width:500px;margin-bottom:20px}
+.lib-empty{text-align:center;padding:40px 0;color:var(--t2)}
+.lib-empty i{font-size:48px;display:block;margin-bottom:12px;color:var(--t3)}
+.lib-empty p{font-size:15px;margin-bottom:6px;color:var(--t1);font-weight:700}
+.lib-empty span{font-size:13px}
+.hist-item{display:flex;align-items:center;gap:14px;padding:8px 4px;border-radius:6px;cursor:pointer}
+.hist-item:hover{background:var(--sur3)}
+.hist-cov{width:50px;height:50px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}
+.hist-info{flex:1;min-width:0}
+.hist-title{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-sub{font-size:12px;color:var(--t2);margin-top:2px}
+.hist-prog{height:3px;background:var(--sur4);border-radius:2px;margin-top:6px;width:80%}
+.hist-prog-fill{height:100%;background:var(--g);border-radius:2px}
+.hist-time{font-size:11px;color:var(--t2)}
+.player-bar{grid-column:1/-1;background:#181818;border-top:1px solid #282828;display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:var(--ph);border-radius:0 0 8px 8px}
+.pb-l{display:flex;align-items:center;gap:10px;width:190px;min-width:0}
+.pb-thumb{width:46px;height:46px;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+.pb-track{min-width:0}
+.pb-title{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pb-artist{font-size:11px;color:var(--t2);margin-top:1px}
+.pb-hrt{background:none;border:none;color:var(--t2);cursor:pointer;font-size:18px;padding:0 2px}
+.pb-hrt:hover{color:var(--t1)}
+.pb-c{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:460px}
+.pb-ctrls{display:flex;align-items:center;gap:14px}
+.pbc{background:none;border:none;color:var(--t2);cursor:pointer;font-size:18px;padding:0}
+.pbc:hover{color:var(--t1)}
+.pb-play{width:34px;height:34px;background:var(--t1);border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:#000}
+.pb-play:hover{transform:scale(1.06)}
+.pb-prog{display:flex;align-items:center;gap:8px;width:100%}
+.pb-tm{font-size:11px;color:var(--t2);min-width:30px}
+.pb-tm.r{text-align:right}
+.pb-bar{flex:1;height:4px;background:var(--sur4);border-radius:2px;cursor:pointer;overflow:hidden}
+.pb-fill{height:100%;background:var(--t1);border-radius:2px;transition:width .3s}
+.pb-bar:hover .pb-fill{background:var(--g)}
+.pb-r{display:flex;align-items:center;gap:8px;width:170px;justify-content:flex-end}
+.pb-vbar{width:70px;height:4px;background:var(--sur4);border-radius:2px;overflow:hidden}
+.pb-vfill{height:100%;background:var(--t1);border-radius:2px;width:62%}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;vertical-align:middle;margin-left:6px}
+.badge.g{background:#0d3320;color:var(--g)}
+.badge.w{background:var(--sur3);color:var(--t2)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="sb-top">
+      <div class="ni on" id="ni-home" onclick="nav('home')"><i class="ti ti-home"></i>Trang chủ</div>
+      <div class="ni" id="ni-search" onclick="nav('search')"><i class="ti ti-search"></i>Tìm kiếm</div>
+    </div>
+    <div class="sb-lib">
+      <div class="lib-hd">
+        <span><i class="ti ti-books"></i>Thư viện</span>
+        <button onclick="nav('library')"><i class="ti ti-arrow-right"></i></button>
+      </div>
+      <div class="lib-list" id="sb-lib-list"></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="tb-nav">
+        <button class="tnav" onclick="goBack()"><i class="ti ti-chevron-left"></i></button>
+        <button class="tnav"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      <div style="display:flex;gap:8px">
+        <div class="ni" style="padding:6px 14px;background:var(--sur3);border-radius:500px;font-size:13px" onclick="nav('rank')"><i class="ti ti-trophy" style="font-size:16px"></i>Xếp hạng</div>
+        <div class="ni" style="padding:6px 14px;background:var(--sur3);border-radius:500px;font-size:13px" onclick="nav('history')"><i class="ti ti-history" style="font-size:16px"></i>Lịch sử</div>
+      </div>
+      <div class="tb-r"><div class="avatar">BT</div></div>
+    </div>
+    <div class="content" id="content">
+      <div class="page on" id="page-home"></div>
+      <div class="page" id="page-search"></div>
+      <div class="page" id="page-genre"></div>
+      <div class="page" id="page-rank"></div>
+      <div class="page" id="page-library"></div>
+      <div class="page" id="page-history"></div>
+      <div class="page" id="page-detail"></div>
+    </div>
+  </div>
+  <div class="player-bar">
+    <div class="pb-l">
+      <div class="pb-thumb" id="pb-thumb" style="background:#2a2a2a"><i class="ti ti-headphones" style="font-size:18px;color:#555"></i></div>
+      <div class="pb-track">
+        <div class="pb-title" id="pb-title">Chưa phát</div>
+        <div class="pb-artist" id="pb-artist">—</div>
+      </div>
+      <button class="pb-hrt" id="pb-hrt" onclick="toggleSave()"><i class="ti ti-heart"></i></button>
+    </div>
+    <div class="pb-c">
+      <div class="pb-ctrls">
+        <button class="pbc"><i class="ti ti-arrows-shuffle"></i></button>
+        <button class="pbc" onclick="prevEp()"><i class="ti ti-player-skip-back"></i></button>
+        <button class="pb-play" onclick="togglePlay()" id="pb-playbtn"><i class="ti ti-player-play" id="pb-ico"></i></button>
+        <button class="pbc" onclick="nextEp()"><i class="ti ti-player-skip-forward"></i></button>
+        <button class="pbc"><i class="ti ti-repeat"></i></button>
+      </div>
+      <div class="pb-prog">
+        <span class="pb-tm" id="pb-cur">0:00</span>
+        <div class="pb-bar"><div class="pb-fill" id="pb-fill" style="width:0%"></div></div>
+        <span class="pb-tm r" id="pb-dur">—</span>
+      </div>
+    </div>
+    <div class="pb-r">
+      <button class="pbc" onclick="nav('library')"><i class="ti ti-playlist"></i></button>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="pbc"><i class="ti ti-volume"></i></button>
+        <div class="pb-vbar"><div class="pb-vfill"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// ===== DỮ LIỆU TRUYỆN — CHỈNH SỬA Ở ĐÂY =====
+const ST=[
+  {id:0,t:"Sở Hậu Hi Hành",a:"Diệp Lạc Vô Tâm",g:"Ngôn tình",s:"ongoing",v:1240000,desc:"Tình yêu ngọt ngào giữa Hạ Hi và Sở Chiêm Hoài trong showbiz.",eps:[
+    {n:"Tập 1 — Sơ gặp",d:"18:32",dt:"15/5",yt:"YOUTUBE_ID_TAP_1"},
+    {n:"Tập 2 — Hiểu lầm",d:"21:14",dt:"16/5",yt:"YOUTUBE_ID_TAP_2"},
+    {n:"Tập 3 — Sóng gió",d:"19:50",dt:"17/5",yt:"YOUTUBE_ID_TAP_3"},
+  ]},
+  {id:1,t:"Đấu Phá Thương Khung",a:"Thiên Tàm Thổ Đậu",g:"Tiên hiệp",s:"full",v:3800000,desc:"Tiêu Viêm từ phế vật tu luyện lên đỉnh Đấu Khí đại lục.",eps:[
+    {n:"Tập 1 — Tài năng",d:"22:10",dt:"1/1",yt:"YOUTUBE_ID"},
+    {n:"Tập 2 — Dị hỏa",d:"20:45",dt:"2/1",yt:"YOUTUBE_ID"},
+  ]},
+  // Thêm truyện tiếp theo theo cấu trúc trên...
+];
+// ===== KẾT THÚC DỮ LIỆU =====
+
+const CVS=[
+  {bg:"#3d1200",e:"⚔️"},{bg:"#0a2e1a",e:"🌿"},{bg:"#180830",e:"🏯"},
+  {bg:"#001830",e:"🌙"},{bg:"#3a1a00",e:"🔥"},{bg:"#18180a",e:"💫"},
+  {bg:"#2a0030",e:"👑"},{bg:"#00152a",e:"🗡️"},{bg:"#2e0a00",e:"🐉"},
+];
+const GC=[
+  {n:"Tiên hiệp",c:"#1e3a5f",e:"⚡"},{n:"Ngôn tình",c:"#5f1e3a",e:"💗"},
+  {n:"Kiếm hiệp",c:"#3a1e00",e:"⚔️"},{n:"Huyền huyễn",c:"#2a0f4a",e:"🌌"},
+  {n:"Kinh dị",c:"#111",e:"👁️"},{n:"Trinh thám",c:"#0f2a1a",e:"🔍"},
+  {n:"Hài hước",c:"#3a2a00",e:"🎭"},{n:"Lịch sử",c:"#2a1a0f",e:"📜"},
+  {n:"Xuyên không",c:"#1a0f3a",e:"⌛"},{n:"Trọng sinh",c:"#0f2a2a",e:"🔄"},
+];
+let cur={sid:null,ei:0};let playing=false;let saved=new Set();let history=[];let prog=0;let progTimer=null;let curPage="home";let prevPage="home";
+function cvBg(id){return CVS[id%CVS.length].bg}
+function cvE(id){return CVS[id%CVS.length].e}
+function fmtV(v){return v>=1e6?(v/1e6).toFixed(1)+"M":v>=1e3?Math.round(v/1e3)+"K":v}
+function parseDur(d){const p=d.split(":");return parseInt(p[0])*60+parseInt(p[1]);}
+function fmt(s){return Math.floor(s/60)+":"+String(Math.floor(s%60)).padStart(2,"0")}
+function nav(p){
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("on"));
+  document.getElementById("page-"+p).classList.add("on");
+  document.getElementById("content").scrollTop=0;
+  document.querySelectorAll(".ni").forEach(x=>x.classList.remove("on"));
+  if(p==="home")document.getElementById("ni-home").classList.add("on");
+  if(p==="search")document.getElementById("ni-search").classList.add("on");
+  prevPage=curPage;curPage=p;
+  if(p==="rank")buildRank();
+  if(p==="library")buildLibrary();
+  if(p==="history")buildHistory();
+}
+function goBack(){nav(prevPage==="detail"?curPage:prevPage)}
+function goDetail(id){buildDetail(id);nav("detail");}
+function playEp(sid,ei){
+  const s=ST[sid];const ep=s.eps[ei];
+  cur={sid,ei};playing=true;
+  document.getElementById("pb-title").textContent=ep.n;
+  document.getElementById("pb-artist").textContent=s.t+" · "+s.a;
+  const th=document.getElementById("pb-thumb");
+  th.style.background=cvBg(sid);th.textContent=cvE(sid);
+  document.getElementById("pb-ico").className="ti ti-player-pause";
+  document.getElementById("pb-dur").textContent=ep.d;
+  document.getElementById("pb-hrt").style.color=saved.has(sid)?"var(--g)":"var(--t2)";
+  document.querySelectorAll(".ep-row").forEach(r=>r.classList.remove("now"));
+  const row=document.getElementById("epr-"+sid+"-"+ei);
+  if(row){row.classList.add("now");const n=row.querySelector(".ep-n");if(n)n.innerHTML='<i class="ti ti-volume" style="color:var(--g)"></i>';}
+  addHistory(sid,ei);
+  prog=0;clearInterval(progTimer);
+  progTimer=setInterval(()=>{prog=Math.min(100,prog+0.3);document.getElementById("pb-fill").style.width=prog+"%";const total=parseDur(ep.d);const c2=total*prog/100;document.getElementById("pb-cur").textContent=fmt(c2);},300);
+  // Mở YouTube nếu có ID
+  if(ep.yt&&ep.yt!=="YOUTUBE_ID"&&!ep.yt.startsWith("YOUTUBE")){
+    window.open("https://www.youtube.com/watch?v="+ep.yt,"_blank");
+  }
+}
+function togglePlay(){playing=!playing;document.getElementById("pb-ico").className=playing?"ti ti-player-pause":"ti ti-player-play";}
+function prevEp(){if(cur.sid===null)return;playEp(cur.sid,Math.max(0,cur.ei-1));}
+function nextEp(){if(cur.sid===null)return;const s=ST[cur.sid];playEp(cur.sid,Math.min(s.eps.length-1,cur.ei+1));}
+function toggleSave(){
+  if(cur.sid===null)return;
+  if(saved.has(cur.sid))saved.delete(cur.sid);else saved.add(cur.sid);
+  document.getElementById("pb-hrt").style.color=saved.has(cur.sid)?"var(--g)":"var(--t2)";
+  buildSbLib();
+}
+function addHistory(sid,ei){history=history.filter(h=>!(h.sid===sid&&h.ei===ei));history.unshift({sid,ei});if(history.length>20)history.pop();}
+function card(s,onclick){
+  return `<div class="sc" onclick="${onclick}"><div class="sc-img" style="background:${cvBg(s.id)}">${cvE(s.id)}<div class="sc-play" onclick="event.stopPropagation();playEp(${s.id},0)"><i class="ti ti-player-play"></i></div></div><div class="sc-title">${s.t}</div><div class="sc-sub">${s.a} · ${s.g}</div></div>`;
+}
+function buildHome(){
+  const h=new Date().getHours();
+  const gr=h<12?"Chào buổi sáng":h<18?"Chào buổi chiều":"Chào buổi tối";
+  let html=`<div class="greeting">${gr}</div><div class="qgrid">`;
+  ST.slice(0,6).forEach(s=>{html+=`<div class="qi" onclick="goDetail(${s.id})"><div class="qi-img" style="background:${cvBg(s.id)}">${cvE(s.id)}</div><span class="qi-name">${s.t}</span></div>`;});
+  html+=`</div><div class="shelf"><div class="sh-hd"><span class="sh-title">Mới cập nhật</span><span class="sh-more" onclick="nav('search')">Hiện tất cả</span></div><div class="cgrid">`;
+  ST.forEach(s=>{html+=card(s,`goDetail(${s.id})`)});
+  html+=`</div></div><div class="shelf"><div class="sh-hd"><span class="sh-title">Thể loại nổi bật</span></div><div class="gcards">`;
+  GC.slice(0,6).forEach(g=>{html+=`<div class="gc" style="background:${g.c}" onclick="nav('genre')"><span class="gc-name">${g.n}</span><span class="gc-icon">${g.e}</span></div>`;});
+  html+=`</div></div>`;
+  document.getElementById("page-home").innerHTML=html;
+}
+function buildSearch(){
+  let html=`<div style="font-size:22px;font-weight:900;margin-bottom:14px">Tìm kiếm</div><div class="search-box"><i class="ti ti-search"></i><input id="si" placeholder="Tên truyện, tác giả, thể loại..." oninput="doSearch(this.value)"></div><div id="sr-browse"><div style="font-size:16px;font-weight:900;margin-bottom:12px">Tất cả thể loại</div><div class="gcards">`;
+  GC.forEach(g=>{html+=`<div class="gc" style="background:${g.c}" onclick="filterG('${g.n}')"><span class="gc-name">${g.n}</span><span class="gc-icon">${g.e}</span></div>`;});
+  html+=`</div></div><div id="sr-results" style="display:none"></div>`;
+  document.getElementById("page-search").innerHTML=html;
+}
+function doSearch(q){
+  const br=document.getElementById("sr-browse");const rs=document.getElementById("sr-results");
+  if(!q.trim()){br.style.display="";rs.style.display="none";return;}
+  br.style.display="none";rs.style.display="";
+  const found=ST.filter(s=>s.t.toLowerCase().includes(q.toLowerCase())||s.a.toLowerCase().includes(q.toLowerCase())||s.g.toLowerCase().includes(q.toLowerCase()));
+  if(!found.length){rs.innerHTML=`<div style="text-align:center;padding:40px 0;color:var(--t2)">Không tìm thấy "<b style="color:var(--t1)">${q}</b>"</div>`;return;}
+  let html=`<div style="font-size:14px;color:var(--t2);margin-bottom:14px">Kết quả cho "<b style="color:var(--t1)">${q}</b>" — ${found.length} truyện</div><div class="cgrid">`;
+  found.forEach(s=>{html+=card(s,`goDetail(${s.id})`)});
+  html+=`</div>`;rs.innerHTML=html;
+}
+function buildGenrePage(){
+  let html=`<div style="font-size:22px;font-weight:900;margin-bottom:18px">Thể loại</div><div class="gcards" style="margin-bottom:24px">`;
+  GC.forEach(g=>{html+=`<div class="gc" style="background:${g.c}" onclick="filterG('${g.n}')"><span class="gc-name">${g.n}</span><span class="gc-icon">${g.e}</span></div>`;});
+  html+=`</div><div id="gres"></div>`;
+  document.getElementById("page-genre").innerHTML=html;
+}
+function filterG(name){
+  const el=document.getElementById("gres")||document.getElementById("sr-results");
+  const matched=ST.filter(s=>s.g===name);
+  let html=`<div style="font-size:18px;font-weight:900;margin-bottom:14px">${name} <span style="font-size:14px;color:var(--t2);font-weight:400">${matched.length} truyện</span></div>`;
+  if(!matched.length){html+=`<div style="color:var(--t2)">Chưa có truyện thể loại này.</div>`;}
+  else{html+=`<div class="cgrid">`;matched.forEach(s=>{html+=card(s,`goDetail(${s.id})`)});html+=`</div>`;}
+  if(el)el.innerHTML=html;
+}
+function buildRank(){
+  const tabs=["Ngày","Tuần","Tháng","Mọi thời đại"];
+  let html=`<div style="font-size:22px;font-weight:900;margin-bottom:14px">Bảng xếp hạng</div><div class="tab-row">`;
+  tabs.forEach((t,i)=>{html+=`<button class="tab${i===1?" on":""}" onclick="this.parentNode.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));this.classList.add('on')">${t}</button>`;});
+  html+=`</div>`;
+  const ranked=[...ST].sort((a,b)=>b.v-a.v);
+  ranked.forEach((s,i)=>{
+    html+=`<div class="rk-item" onclick="goDetail(${s.id})"><span class="rk-num">${i+1}</span><div class="rk-cov" style="background:${cvBg(s.id)}">${cvE(s.id)}</div><div class="rk-info"><div class="rk-title">${s.t}</div><div class="rk-sub">${s.a} · ${s.g}${s.s==="ongoing"?'<span class="badge g">Đang ra</span>':'<span class="badge w">Full</span>'}</div></div><span class="rk-views">${fmtV(s.v)} lượt</span></div>`;
+    if(i<ranked.length-1)html+=`<hr class="rk-divider">`;
+  });
+  document.getElementById("page-rank").innerHTML=html;
+}
+function buildLibrary(){
+  let html=`<div style="font-size:22px;font-weight:900;margin-bottom:14px">Thư viện của bạn</div>`;
+  const arr=ST.filter(s=>saved.has(s.id));
+  if(!arr.length){html+=`<div class="lib-empty"><i class="ti ti-heart"></i><p>Chưa có truyện đã lưu</p><span>Bấm ♡ trên player để lưu truyện</span></div>`;}
+  else{html+=`<div class="cgrid">`;arr.forEach(s=>{html+=card(s,`goDetail(${s.id})`)});html+=`</div>`;}
+  document.getElementById("page-library").innerHTML=html;
+}
+function buildHistory(){
+  let html=`<div style="font-size:22px;font-weight:900;margin-bottom:14px">Lịch sử nghe</div>`;
+  if(!history.length){html+=`<div class="lib-empty"><i class="ti ti-history"></i><p>Chưa có lịch sử</p><span>Các truyện đã nghe sẽ xuất hiện ở đây</span></div>`;}
+  else{history.forEach(h=>{const s=ST[h.sid];const ep=s.eps[h.ei];const pct=Math.round(Math.random()*80)+10;html+=`<div class="hist-item" onclick="goDetail(${s.id});playEp(${s.id},${h.ei})"><div class="hist-cov" style="background:${cvBg(s.id)}">${cvE(s.id)}</div><div class="hist-info"><div class="hist-title">${s.t}</div><div class="hist-sub">${ep.n} · ${s.a}</div><div class="hist-prog"><div class="hist-prog-fill" style="width:${pct}%"></div></div></div><span class="hist-time">${ep.d}</span></div>`;});}
+  document.getElementById("page-history").innerHTML=html;
+}
+function buildDetail(id){
+  const s=ST[id];
+  let html=`<div class="det-hero"><div class="det-cov" style="background:${cvBg(id)}">${cvE(id)}</div><div><div class="det-type">Truyện audio</div><div class="det-title">${s.t}</div><div class="det-meta"><b>${s.a}</b> · ${s.g} · ${s.s==="ongoing"?'<span style="color:var(--g)">● Đang ra</span>':'<span>✓ Full bộ</span>'} · <b>${s.eps.length} tập</b> · ${fmtV(s.v)} lượt</div></div></div><div class="det-acts"><button class="btn-g" onclick="playEp(${id},0)"><i class="ti ti-player-play" style="font-size:16px"></i>Phát</button><button class="btn-o">+ Lưu</button><button class="btn-ic"><i class="ti ti-dots"></i></button></div><div class="desc-box">${s.desc}</div><div class="ep-hd"><span>#</span><span>Tiêu đề</span><span><i class="ti ti-clock"></i></span></div>`;
+  s.eps.forEach((ep,i)=>{html+=`<div class="ep-row" id="epr-${id}-${i}" onclick="playEp(${id},${i})"><span class="ep-n">${i+1}</span><div class="ep-meta"><div class="ep-name">${ep.n}</div><div class="ep-date">${ep.dt}</div></div><span class="ep-dur">${ep.d}</span></div>`;});
+  document.getElementById("page-detail").innerHTML=html;
+}
+function buildSbLib(){
+  const el=document.getElementById("sb-lib-list");
+  const arr=saved.size?ST.filter(s=>saved.has(s.id)):ST.slice(0,5);
+  let html="";
+  arr.forEach(s=>{html+=`<div class="li" onclick="goDetail(${s.id})"><div class="li-cov" style="background:${cvBg(s.id)}">${cvE(s.id)}</div><div><div class="li-name">${s.t}</div><div class="li-sub">Truyện · ${s.g}</div></div></div>`;});
+  el.innerHTML=html;
+}
+buildHome();buildSearch();buildGenrePage();buildSbLib();
+</script>
+</body>
+</html>
